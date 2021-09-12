@@ -1,0 +1,26 @@
+---
+- hosts: client
+  tasks:
+  - name: copy files from server
+    copy:
+        src: /home/ec2-user/my-website
+        dest: ./my-website
+  - name: copy docker file from server
+    copy:
+        src: /home/ec2-user/config/Dockerfile
+        dest: .
+  - name: Stop running container
+    command: docker rm -f webapp
+    ignore_errors: True
+    
+  - name: remove Image
+    command: docker rmi my-website
+    ignore_errors: True
+    
+  - name: Create Image from Dockerfile
+    command: docker build -t custom-image .
+    
+  - name: Create and run container
+    command: docker run -itd -p8080:80 --name webapp custom-image
+    
+ 
